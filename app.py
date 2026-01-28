@@ -134,6 +134,7 @@ def predict_emotion(image, model, device):
     
     img_tensor = transform(image).unsqueeze(0).to(device)
     
+    model.eval()  # Ensure model is in eval mode (disables dropout)
     with torch.no_grad():
         outputs = model(img_tensor)
         probs = F.softmax(outputs, dim=1)
