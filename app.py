@@ -30,8 +30,18 @@ st.markdown("""
         font-weight: 600;
     }
     
+    /* Black sidebar with white text */
     [data-testid="stSidebar"] {
-        background-color: #f7fafc;
+        background-color: #1a1a1a;
+    }
+    
+    [data-testid="stSidebar"] * {
+        color: white !important;
+    }
+    
+    [data-testid="stSidebar"] .stAlert {
+        background-color: #2d2d2d;
+        color: white !important;
     }
     
     [data-testid="stImage"] {
@@ -81,14 +91,16 @@ class BalancedEmotionCNN(nn.Module):
     def forward(self, x):
         return self.classifier(self.features(x))
 
-# Constants
+# Constants - MUST MATCH TRAINING
 IMG_SIZE = 224
 IMAGENET_MEAN = [0.485, 0.456, 0.406]
 IMAGENET_STD = [0.229, 0.224, 0.225]
-EMOTION_CLASSES = ['angry', 'happy', 'neutral']
+
+# Classes from ImageFolder in alphabetical order: ['anger', 'happy', 'neutral']
+EMOTION_CLASSES = ['anger', 'happy', 'neutral']
 
 EMOTION_COLORS = {
-    'angry': '#dc2626',
+    'anger': '#dc2626',
     'happy': '#16a34a',
     'neutral': '#2563eb',
     'sad': '#6b7280',
