@@ -281,13 +281,83 @@ def create_probability_chart(all_probs):
         ),
         xaxis=dict(
             title='Confidence (%)',
-       markdown(f"""
+            showgrid=True,
+            gridcolor='rgba(0,0,0,0.1)',
+            range=[0, 100]
+        ),
+        yaxis=dict(
+            title='',
+            categoryorder='total ascending'
+        ),
+        plot_bgcolor='rgba(0,0,0,0)',
+        paper_bgcolor='rgba(0,0,0,0)',
+        height=300,
+        margin=dict(l=10, r=10, t=40, b=10),
+        font=dict(family='Arial', size=12, color='#4A5568')
+    )
+    
+    return fig
+
+def main():
+    # Header
+    st.markdown("<h1>🎭 Facial Emotion Recognition AI</h1>", unsafe_allow_html=True)
+    st.markdown("<p style='text-align: center; color: white; font-size: 1.2rem; margin-bottom: 2rem;'>Advanced deep learning model for real-time emotion detection</p>", unsafe_allow_html=True)
+    
+    # Sidebar
+    with st.sidebar:
+        st.markdown("<h2 style='color: white;'>About</h2>", unsafe_allow_html=True)
+        st.markdown("""
+        <div style='background: rgba(255,255,255,0.1); padding: 1rem; border-radius: 10px; color: white;'>
+        This application uses a state-of-the-art Convolutional Neural Network (CNN) to analyze 
+        facial expressions and classify emotions with high accuracy.
+        </div>
+        """, unsafe_allow_html=True)
+        
+        st.markdown("<br>", unsafe_allow_html=True)
+        st.markdown("<h3 style='color: white;'>Model Specifications</h3>", unsafe_allow_html=True)
+        st.markdown("""
+        <div style='color: white;'>
+        <ul>
+            <li><b>Architecture:</b> Custom CNN (4 blocks)</li>
+            <li><b>Input Size:</b> 224×224 RGB</li>
+            <li><b>Parameters:</b> ~5M</li>
+            <li><b>Training:</b> Balanced dataset</li>
+        </ul>
+        </div>
+        """, unsafe_allow_html=True)
+        
+        st.markdown("<br>", unsafe_allow_html=True)
+        st.markdown("<h3 style='color: white;'>Detectable Emotions</h3>", unsafe_allow_html=True)
+        for emotion in EMOTION_CLASSES:
+            color = EMOTION_COLORS.get(emotion, '#667eea')
+            st.markdown(f"""
+            <div style='background: rgba(255,255,255,0.2); padding: 0.5rem; 
+            border-radius: 8px; margin-bottom: 0.5rem; color: white;
+            border-left: 4px solid {color};'>
+            <b>{emotion.upper()}</b>
+            </div>
+            """, unsafe_allow_html=True)
+    
+    # Load model
+    model, device = load_model()
+    
+    if model is None:
+        st.error("Failed to load model. Please check if 'Balanced_Emotion_Model (1).pt' exists.")
+        return
+    
+    st.markdown(f"""
     <div style='background: linear-gradient(135deg, rgba(72, 187, 120, 0.2), rgba(56, 178, 172, 0.2)); 
     padding: 1rem; border-radius: 10px; text-align: center; color: #2D3748; margin-bottom: 2rem;
     border-left: 4px solid #48BB78;'>
     <b>Model Status:</b> Loaded Successfully | <b>Device:</b> {device}
     </div>
-    """,st.markdown("### Upload a facial image for analysis")
+    """, unsafe_allow_html=True)
+    
+    # Create tabs
+    tab1, tab2 = st.tabs(["Upload Image", "Use Webcam"])
+    
+    with tab1:
+        st.markdown("### Upload a facial image for analysis")
         
         # File uploader
         uploaded_file = st.file_uploader(
@@ -329,7 +399,11 @@ def create_probability_chart(all_probs):
                 """, unsafe_allow_html=True)
                 
                 # Probability chart
-           markdown("### Capture image directly from your webcam")
+                fig = create_probability_chart(all_probs)
+                st.plotly_chart(fig, use_container_width=True)
+    
+    with tab2:
+        st.markdown("### Capture image directly from your webcam")
         st.markdown("""
         <div style='background: rgba(102, 126, 234, 0.1); padding: 1rem; border-radius: 10px; 
         margin-bottom: 1rem; border-left: 4px solid #667eea;'>
@@ -368,7 +442,16 @@ def create_probability_chart(all_probs):
                     </h2>
                     <p style='color: #2D3748; font-size: 1.5rem; margin-top: 0.5rem; font-weight: 600;'>
                     {confidence:.1%} Confidence
-                 <br><br>", unsafe_allow_html=True)
+                    </p>
+                </div>
+                """, unsafe_allow_html=True)
+                
+                # Probability chart
+                fig = create_probability_chart(all_probs)
+                st.plotly_chart(fig, use_container_width=True)
+    
+    # Footer
+    st.markdown("<br><br>", unsafe_allow_html=True)
     st.markdown("""
     <div style='text-align: center; padding: 2rem; background: rgba(255,255,255,0.1); 
     border-radius: 15px; margin-top: 2rem;'>
@@ -376,90 +459,7 @@ def create_probability_chart(all_probs):
         Powered by <b>PyTorch</b> & <b>Streamlit</b> | Deep Learning Emotion Recognition System
         </p>
     </div>
-    """, unsafe_allow_html=True            st.plotly_chart(fig, use_container_width=Trueemotion detection"
-        )
-        
-        if uploaded_file is not None:
-            # Display original image
-            image = Image.open(uploaded_file)
-            
-            col1, col2 = st.columns(2)
-            
-            with col1:
-                st.subheader("Original Image")
-                st.image(image, use_container_width=True)
-            
-            with col2:
-                st.subheader("Prediction Results")
-                
-                with st.spinner("Analyzing emotion..."):
-                    emotion, confidence, all_probs = predict_emotion(image, model, device)
-                
-                # Display results
-                emoji = EMOTION_EMOJIS.get(emotion, '🙂')
-                st.markdown(f"### {emoji} **{emotion.upper()}**")
-                st.metric("Confidence", f"{confidence:.1%}")
-                
-                # Progress bars for all emotions
-                st.markdown("---")
-                st.subheader("All Probabilities")
-                
-                # Sort by probability
-                sorted_probs = sorted(all_probs.items(), key=lambda x: x[1], reverse=True)
-                
-                for emo, prob in sorted_probs:
-                    emoji = EMOTION_EMOJIS.get(emo, '🙂')
-                    st.write(f"{emoji} **{emo.capitalize()}**")
-                    st.progress(prob)
-                    st.caption(f"{prob:.1%}")
-    
-    with tab2:
-        st.subheader("📹 Webcam Capture")
-        st.info("Click the button below to capture an image from your webcam")
-        
-        camera_image = st.camera_input("Take a picture")
-        
-        if camera_image is not None:
-            # Display captured image
-            image = Image.open(camera_image)
-            
-            col1, col2 = st.columns(2)
-            
-            with col1:
-                st.subheader("Captured Image")
-                st.image(image, use_container_width=True)
-            
-            with col2:
-                st.subheader("Prediction Results")
-                
-                with st.spinner("Analyzing emotion..."):
-                    emotion, confidence, all_probs = predict_emotion(image, model, device)
-                
-                # Display results
-                emoji = EMOTION_EMOJIS.get(emotion, '🙂')
-                st.markdown(f"### {emoji} **{emotion.upper()}**")
-                st.metric("Confidence", f"{confidence:.1%}")
-                
-                # Progress bars for all emotions
-                st.markdown("---")
-                st.subheader("All Probabilities")
-                
-                sorted_probs = sorted(all_probs.items(), key=lambda x: x[1], reverse=True)
-                
-                for emo, prob in sorted_probs:
-                    emoji = EMOTION_EMOJIS.get(emo, '🙂')
-                    st.write(f"{emoji} **{emo.capitalize()}**")
-                    st.progress(prob)
-                    st.caption(f"{prob:.1%}")
-    
-    # Footer
-    st.markdown("---")
-    st.markdown(
-        "<div style='text-align: center'>"
-        "<p>Built with Streamlit and PyTorch</p>"
-        "</div>",
-        unsafe_allow_html=True
-    )
+    """, unsafe_allow_html=True)
 
 if __name__ == "__main__":
     main()
