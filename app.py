@@ -16,133 +16,30 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Custom CSS for modern styling
+# Custom CSS for clean styling
 st.markdown("""
 <style>
-    /* Main background and theme */
-    .main {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    }
-    
-    /* Card styling */
-    .stApp {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    }
-    
-    /* Content containers */
-    div[data-testid="stVerticalBlock"] > div {
-        background-color: rgba(255, 255, 255, 0.95);
-        padding: 2rem;
-        border-radius: 15px;
-        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-        backdrop-filter: blur(10px);
-        margin-bottom: 1rem;
-    }
-    
     /* Headers */
     h1 {
-        color: #2D3748;
+        color: #1a202c;
         font-weight: 700;
-        font-size: 2.5rem !important;
-        margin-bottom: 0.5rem;
         text-align: center;
     }
     
-    h2 {
-        color: #4A5568;
-        font-weight: 600;
-        font-size: 1.8rem !important;
-    }
-    
     h3 {
-        color: #667eea;
+        color: #2d3748;
         font-weight: 600;
-        font-size: 1.4rem !important;
     }
     
-    /* Sidebar styling */
+    /* Sidebar */
     [data-testid="stSidebar"] {
-        background: linear-gradient(180deg, #667eea 0%, #764ba2 100%);
+        background-color: #f7fafc;
     }
     
-    [data-testid="stSidebar"] > div:first-child {
-        background: linear-gradient(180deg, #667eea 0%, #764ba2 100%);
-    }
-    
-    [data-testid="stSidebar"] h1, 
-    [data-testid="stSidebar"] h2,
-    [data-testid="stSidebar"] h3,
-    [data-testid="stSidebar"] p,
-    [data-testid="stSidebar"] li {
-        color: white !important;
-    }
-    
-    /* Buttons */
-    .stButton > button {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
-        border: none;
-        border-radius: 10px;
-        padding: 0.75rem 2rem;
-        font-weight: 600;
-        transition: all 0.3s ease;
-    }
-    
-    .stButton > button:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
-    }
-    
-    /* File uploader */
-    [data-testid="stFileUploader"] {
-        background-color: rgba(102, 126, 234, 0.1);
-        border-radius: 10px;
-        padding: 1rem;
-        border: 2px dashed #667eea;
-    }
-    
-    /* Metrics */
-    [data-testid="stMetricValue"] {
-        color: #667eea;
-        font-size: 2rem;
-        font-weight: 700;
-    }
-    
-    /* Tabs */
-    .stTabs [data-baseweb="tab-list"] {
-        gap: 2rem;
-        background-color: transparent;
-    }
-    
-    .stTabs [data-baseweb="tab"] {
-        background-color: rgba(102, 126, 234, 0.1);
-        border-radius: 10px 10px 0 0;
-        padding: 1rem 2rem;
-        color: #4A5568;
-        font-weight: 600;
-    }
-    
-    .stTabs [aria-selected="true"] {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white !important;
-    }
-    
-    /* Progress bars */
-    .stProgress > div > div > div {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    }
-    
-    /* Info boxes */
-    .stAlert {
-        border-radius: 10px;
-        border-left: 5px solid #667eea;
-    }
-    
-    /* Image containers */
+    /* Image styling */
     [data-testid="stImage"] {
-        border-radius: 15px;
-        overflow: hidden;
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        border-radius: 10px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     }
 </style>
 """, unsafe_allow_html=True)
@@ -197,15 +94,15 @@ IMAGENET_MEAN = [0.485, 0.456, 0.406]
 IMAGENET_STD = [0.229, 0.224, 0.225]
 EMOTION_CLASSES = ['angry', 'happy', 'neutral']  # Must match model training order
 
-# Emotion color mapping for modern UI
+# Emotion color mapping
 EMOTION_COLORS = {
-    'angry': '#E53E3E',    # Red
-    'happy': '#48BB78',    # Green
-    'neutral': '#4299E1',  # Blue
-    'sad': '#718096',      # Gray
-    'surprise': '#ED8936', # Orange
-    'fear': '#9F7AEA',     # Purple
-    'disgust': '#38B2AC'   # Teal
+    'angry': '#dc2626',    # Red
+    'happy': '#16a34a',    # Green
+    'neutral': '#2563eb',  # Blue
+    'sad': '#6b7280',      # Gray
+    'surprise': '#ea580c', # Orange
+    'fear': '#9333ea',     # Purple
+    'disgust': '#0891b2'   # Cyan
 }
 
 # Define image transforms
@@ -276,67 +173,49 @@ def create_probability_chart(all_probs):
     
     fig.update_layout(
         title=dict(
-            text='Emotion Probability Distribution',
-            font=dict(size=18, color='#2D3748', family='Arial Black')
+            text='Emotion Confidence Levels',
+            font=dict(size=16, color='#1a202c')
         ),
         xaxis=dict(
             title='Confidence (%)',
             showgrid=True,
-            gridcolor='rgba(0,0,0,0.1)',
+            gridcolor='rgba(0,0,0,0.05)',
             range=[0, 100]
         ),
         yaxis=dict(
             title='',
             categoryorder='total ascending'
         ),
-        plot_bgcolor='rgba(0,0,0,0)',
-        paper_bgcolor='rgba(0,0,0,0)',
-        height=300,
+        plot_bgcolor='white',
+        paper_bgcolor='white',
+        height=280,
         margin=dict(l=10, r=10, t=40, b=10),
-        font=dict(family='Arial', size=12, color='#4A5568')
+        font=dict(size=12, color='#4a5568')
     )
     
     return fig
 
 def main():
     # Header
-    st.markdown("<h1>🎭 Facial Emotion Recognition AI</h1>", unsafe_allow_html=True)
-    st.markdown("<p style='text-align: center; color: white; font-size: 1.2rem; margin-bottom: 2rem;'>Advanced deep learning model for real-time emotion detection</p>", unsafe_allow_html=True)
+    st.title("Facial Emotion Recognition")
+    st.write("Upload an image or use your webcam to detect emotions")
     
     # Sidebar
     with st.sidebar:
-        st.markdown("<h2 style='color: white;'>About</h2>", unsafe_allow_html=True)
-        st.markdown("""
-        <div style='background: rgba(255,255,255,0.1); padding: 1rem; border-radius: 10px; color: white;'>
-        This application uses a state-of-the-art Convolutional Neural Network (CNN) to analyze 
-        facial expressions and classify emotions with high accuracy.
-        </div>
-        """, unsafe_allow_html=True)
+        st.header("About")
+        st.info(
+            "This application uses a Convolutional Neural Network (CNN) to analyze "
+            "facial expressions and classify emotions."
+        )
         
-        st.markdown("<br>", unsafe_allow_html=True)
-        st.markdown("<h3 style='color: white;'>Model Specifications</h3>", unsafe_allow_html=True)
-        st.markdown("""
-        <div style='color: white;'>
-        <ul>
-            <li><b>Architecture:</b> Custom CNN (4 blocks)</li>
-            <li><b>Input Size:</b> 224×224 RGB</li>
-            <li><b>Parameters:</b> ~5M</li>
-            <li><b>Training:</b> Balanced dataset</li>
-        </ul>
-        </div>
-        """, unsafe_allow_html=True)
+        st.header("Model Info")
+        st.write("**Architecture:** Custom CNN")
+        st.write("**Input Size:** 224×224")
+        st.write("**Parameters:** ~5M")
         
-        st.markdown("<br>", unsafe_allow_html=True)
-        st.markdown("<h3 style='color: white;'>Detectable Emotions</h3>", unsafe_allow_html=True)
+        st.header("Detectable Emotions")
         for emotion in EMOTION_CLASSES:
-            color = EMOTION_COLORS.get(emotion, '#667eea')
-            st.markdown(f"""
-            <div style='background: rgba(255,255,255,0.2); padding: 0.5rem; 
-            border-radius: 8px; margin-bottom: 0.5rem; color: white;
-            border-left: 4px solid {color};'>
-            <b>{emotion.upper()}</b>
-            </div>
-            """, unsafe_allow_html=True)
+            st.write(f"• {emotion.capitalize()}")
     
     # Load model
     model, device = load_model()
@@ -360,16 +239,10 @@ def main():
         st.markdown("### Upload a facial image for analysis")
         
         # File uploader
-        uploaded_file = st.file_uploader(
-            "Choose an image file",
-            type=['jpg', 'jpeg', 'png'],
-            help="Supported formats: JPG, JPEG, PNG",
-            label_visibility="collapsed"
-        )
-        
-        if uploaded_file is not None:
-            # Display original image
-            image = Image.open(uploaded_file)
+        uploaded_file = st.file_uploade")
+        return
+    
+    st.success(f"✓ Model loaded | Device: {device}"uploaded_file)
             
             col1, col2 = st.columns([1, 1], gap="large")
             
@@ -381,14 +254,12 @@ def main():
                 st.markdown("#### Analysis Results")
                 
                 with st.spinner("Analyzing facial expression..."):
-                    emotion, confidence, all_probs = predict_emotion(image, model, device)
-                
-                # Display main prediction with styled box
-                color = EMOTION_COLORS.get(emotion, '#667eea')
-                st.markdown(f"""
-                <div style='background: linear-gradient(135deg, {color}20, {color}40); 
-                padding: 2rem; border-radius: 15px; text-align: center; 
-                border: 3px solid {color}; margin-bottom: 1.5rem;'>
+           subheader("Upload Image")
+        
+        # File uploader
+        uploaded_file = st.file_uploader(
+            "Choose an image",
+            type=['jpg', 'jpeg', 'png']}; margin-bottom: 1.5rem;'>
                     <h2 style='color: {color}; margin: 0; font-size: 2.5rem; text-transform: uppercase;'>
                     {emotion}
                     </h2>
@@ -397,34 +268,31 @@ def main():
                     </p>
                 </div>
                 """, unsafe_allow_html=True)
-                
-                # Probability chart
-                fig = create_probability_chart(all_probs)
-                st.plotly_chart(fig, use_container_width=True)
-    
-    with tab2:
-        st.markdown("### Capture image directly from your webcam")
-        st.markdown("""
-        <div style='background: rgba(102, 126, 234, 0.1); padding: 1rem; border-radius: 10px; 
-        margin-bottom: 1rem; border-left: 4px solid #667eea;'>
-        <p style='margin: 0; color: #4A5568;'>
-        Click the camera button below to take a picture for real-time emotion analysis
-        </p>
-        </div>
-        """, unsafe_allow_html=True)
-        
-        camera_image = st.camera_input("Take a picture", label_visibility="collapsed")
-        
-        if camera_image is not None:
-            # Display captured image
-            image = Image.open(camera_image)
-            
-            col1, col2 = st.columns([1, 1], gap="large")
+                2)
             
             with col1:
-                st.markdown("#### Captured Image")
+                st.write("**Input Image**")
                 st.image(image, use_container_width=True)
             
+            with col2:
+                st.write("**Results**")
+                
+                with st.spinner("Analyzing..."):
+                    emotion, confidence, all_probs = predict_emotion(image, model, device)
+                
+                # Display prediction
+                color = EMOTION_COLORS.get(emotion, '#2563eb')
+                st.markdown(f"""
+                <div style='background-color: {color}15; padding: 1.5rem; border-radius: 8px; 
+                text-align: center; border-left: 4px solid {color}; margin-bottom: 1rem;'>
+                    <h2 style='color: {color}; margin: 0; text-transform: uppercase;'>{emotion}</h2>
+                    <p style='color: #374151; font-size: 1.2rem; margin-top: 0.5rem;'>
+                    {confidence:.1%} confidence
+                    </p>
+                </div>
+                """, unsafe_allow_html=True)
+                
+                # C
             with col2:
                 st.markdown("#### Analysis Results")
                 
@@ -432,17 +300,10 @@ def main():
                     emotion, confidence, all_probs = predict_emotion(image, model, device)
                 
                 # Display main prediction with styled box
-                color = EMOTION_COLORS.get(emotion, '#667eea')
-                st.markdown(f"""
-                <div style='background: linear-gradient(135deg, {color}20, {color}40); 
-                padding: 2rem; border-radius: 15px; text-align: center; 
-                border: 3px solid {color}; margin-bottom: 1.5rem;'>
-                    <h2 style='color: {color}; margin: 0; font-size: 2.5rem; text-transform: uppercase;'>
-                    {emotion}
-                    </h2>
-                    <p style='color: #2D3748; font-size: 1.5rem; margin-top: 0.5rem; font-weight: 600;'>
-                    {confidence:.1%} Confidence
-                    </p>
+           subheader("Use Webcam")
+        st.info("Take a photo using your webcam")
+        
+        camera_image = st.camera_input("Take a picture
                 </div>
                 """, unsafe_allow_html=True)
                 
@@ -455,11 +316,29 @@ def main():
     st.markdown("""
     <div style='text-align: center; padding: 2rem; background: rgba(255,255,255,0.1); 
     border-radius: 15px; margin-top: 2rem;'>
-        <p style='color: white; font-size: 0.9rem; margin: 0;'>
-        Powered by <b>PyTorch</b> & <b>Streamlit</b> | Deep Learning Emotion Recognition System
-        </p>
-    </div>
-    """, unsafe_allow_html=True)
-
-if __name__ == "__main__":
-    main()
+        <p style='color: white; font2)
+            
+            with col1:
+                st.write("**Captured Image**")
+                st.image(image, use_container_width=True)
+            
+            with col2:
+                st.write("**Results**")
+                
+                with st.spinner("Analyzing..."):
+                    emotion, confidence, all_probs = predict_emotion(image, model, device)
+                
+                # Display prediction
+                color = EMOTION_COLORS.get(emotion, '#2563eb')
+                st.markdown(f"""
+                <div style='background-color: {color}15; padding: 1.5rem; border-radius: 8px; 
+                text-align: center; border-left: 4px solid {color}; margin-bottom: 1rem;'>
+                    <h2 style='color: {color}; margin: 0; text-transform: uppercase;'>{emotion}</h2>
+                    <p style='color: #374151; font-size: 1.2rem; margin-top: 0.5rem;'>
+                    {confidence:.1%} confidence
+                    </p>
+                </div>
+                """, unsafe_allow_html=True)
+                
+                # C---")
+    st.caption("Built with PyTorch and Streamlit"
